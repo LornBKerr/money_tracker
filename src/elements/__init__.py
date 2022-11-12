@@ -12,4 +12,4 @@ The database elements included in the package are
  """
 
 from .account import Account
-
+from .bank_account import BankAccount

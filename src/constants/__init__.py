@@ -11,4 +11,4 @@ The contants included in the package are
  License:    see file LICENSE
  """
 
-from .constants import AccountType
+from .constants import AccountType, BankAccountType

@@ -35,4 +35,30 @@ class AccountType:
     # end list()
 
 # end class AccountType
+ 
+class BankAccountType:
+    """
+    Available bank account types.
+    
+    The defined Bank account types are standard 'Checking', 'Savings', 
+    'CD' accounts. The NO_TYPE type is used to indicate no account type has
+    been assigned.
+    """
+    NO_TYPE = 0
+    CHECKING = 1
+    SAVINGS = 2
+    CD = 3
+    
+    @staticmethod
+    def list() -> []:
+        """
+        Return a list of the defined BankAccountTypes.
+        
+        Returns:
+            (list) a list of the available BankAccountTypes
+        """
+        return [BankAccountType.NO_TYPE, BankAccountType.CHECKING, BankAccountType.SAVINGS, BankAccountType.CD]
 
+    # end list()
+
+# end class BankAccountType
