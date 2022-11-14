@@ -14,6 +14,7 @@ from elements import Account, BankAccount
 
 database = "test.db"
 
+
 def close_database(dbref):
     dbref.sql_close()
 
@@ -24,6 +25,7 @@ def open_database(tmpdir):
     dbref = Dbal()
     dbref.sql_connect(path)
     return dbref
+
 
 @pytest.fixture
 def create_accounts_table(open_database):
@@ -165,8 +167,13 @@ def test_0306_get_default_property_values(open_database):
     assert account.get_company() == account.defaults["company"]
     assert account.get_account_number() == account.defaults["account_number"]
     assert account.get_account_separate() == account.defaults["account_separate"]
-    assert account.get_hide_in_transaction_list() == account.defaults["hide_in_transaction_list"]
-    assert account.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    assert (
+        account.get_hide_in_transaction_list()
+        == account.defaults["hide_in_transaction_list"]
+    )
+    assert (
+        account.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    )
     assert account.get_check_writing_avail() == account.defaults["check_writing_avail"]
     assert account.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
@@ -186,8 +193,13 @@ def test_0307_set_properties_from_dict(open_database):
     assert account.get_company() == account_values["company"]
     assert account.get_account_number() == account_values["account_number"]
     assert account.get_account_separate() == account_values["account_separate"]
-    assert account.get_hide_in_transaction_list() == account_values["hide_in_transaction_list"]
-    assert account.get_hide_in_account_lists() == account_values["hide_in_account_lists"]
+    assert (
+        account.get_hide_in_transaction_list()
+        == account_values["hide_in_transaction_list"]
+    )
+    assert (
+        account.get_hide_in_account_lists() == account_values["hide_in_account_lists"]
+    )
     assert account.get_check_writing_avail() == account_values["check_writing_avail"]
     assert account.get_remarks() == account_values["remarks"]
     close_database(dbref)
@@ -205,8 +217,13 @@ def test_0308_initial_partial_account_values(open_database):
     assert account.get_company() == account.defaults["company"]
     assert account.get_account_number() == account.defaults["account_number"]
     assert account.get_account_separate() == account.defaults["account_separate"]
-    assert account.get_hide_in_transaction_list() == account.defaults["hide_in_transaction_list"]
-    assert account.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    assert (
+        account.get_hide_in_transaction_list()
+        == account.defaults["hide_in_transaction_list"]
+    )
+    assert (
+        account.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    )
     assert account.get_check_writing_avail() == account.defaults["check_writing_avail"]
     assert account.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
@@ -225,8 +242,13 @@ def test_0309_bad_column_name(open_database):
     assert account.get_company() == account.defaults["company"]
     assert account.get_account_number() == account.defaults["account_number"]
     assert account.get_account_separate() == account.defaults["account_separate"]
-    assert account.get_hide_in_transaction_list() == account.defaults["hide_in_transaction_list"]
-    assert account.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    assert (
+        account.get_hide_in_transaction_list()
+        == account.defaults["hide_in_transaction_list"]
+    )
+    assert (
+        account.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    )
     assert account.get_check_writing_avail() == account.defaults["check_writing_avail"]
     assert account.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
@@ -256,8 +278,13 @@ def test_0311_account_read_db(create_accounts_table):
     assert account.get_company() == account_values["company"]
     assert account.get_account_number() == account_values["account_number"]
     assert account.get_account_separate() == account_values["account_separate"]
-    assert account.get_hide_in_transaction_list() == account_values["hide_in_transaction_list"]
-    assert account.get_hide_in_account_lists() == account_values["hide_in_account_lists"]
+    assert (
+        account.get_hide_in_transaction_list()
+        == account_values["hide_in_transaction_list"]
+    )
+    assert (
+        account.get_hide_in_account_lists() == account_values["hide_in_account_lists"]
+    )
     assert account.get_check_writing_avail() == account_values["check_writing_avail"]
     assert account.get_remarks() == account_values["remarks"]
     # read db for non-existing account
@@ -273,8 +300,14 @@ def test_0311_account_read_db(create_accounts_table):
     assert account3.get_company() == account.defaults["company"]
     assert account3.get_account_number() == account.defaults["account_number"]
     assert account3.get_account_separate() == account.defaults["account_separate"]
-    assert account3.get_hide_in_transaction_list() == account.defaults["hide_in_transaction_list"]
-    assert account3.get_hide_in_account_lists() == account.defaults["hide_in_account_lists"]
+    assert (
+        account3.get_hide_in_transaction_list()
+        == account.defaults["hide_in_transaction_list"]
+    )
+    assert (
+        account3.get_hide_in_account_lists()
+        == account.defaults["hide_in_account_lists"]
+    )
     assert account3.get_check_writing_avail() == account.defaults["check_writing_avail"]
     assert account3.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
