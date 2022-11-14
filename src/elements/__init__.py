@@ -13,3 +13,5 @@ The database elements included in the package are
 
 from .account import Account
 from .bank_account import BankAccount
+from .bank_account_set import BankAccountSet
+from .investment_account import InvestmentAccount
