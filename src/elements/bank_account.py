@@ -240,8 +240,8 @@ class BankAccount(Account):
         self._set_property("subtype", result["entry"])
 
         self.update_property_flags("subtype", result["entry"], result["valid"])
-        
-        if result['valid']:
+
+        if result["valid"]:
             if subtype == BankAccountType.CHECKING:
                 self.set_check_writing_avail(True)
             elif subtype == BankAccountType.CD:
@@ -250,5 +250,6 @@ class BankAccount(Account):
         return result
 
         # end set_subtype()
+
 
 # end class Bank Account
