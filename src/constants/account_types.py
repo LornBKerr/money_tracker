@@ -1,27 +1,29 @@
 """
-General Flags used throughout the MoneyTrack program
+The account database elements used throughout the MoneyTrack program.
 
-File:       flags.py
+File:       account_types.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
 """
 
+from constants.element_types import ElementType
+
 
 class AccountType:
     """
-    Available top level account types.
+    Available account types.
 
-    The defined Top level account types for general use are 'Bank'
+    The defined account types for general use are 'Bank'
     accounts and  'Investment' accounts. A 'Tax' account is defined for
     internal use to support generating simplified income tax estimates.
     The NO_TYPE type is used to indicate no account type has been assigned.
     """
 
-    NO_TYPE = 0
-    BANK = 1
-    INVESTMENT = 2
-    TAX = 3
+    NO_TYPE = ElementType.ACCOUNT | 0x00000
+    BANK = ElementType.ACCOUNT | 0x00010
+    INVESTMENT = ElementType.ACCOUNT | 0x00020
+    TAX = ElementType.ACCOUNT | 0x00030
 
     @staticmethod
     def list() -> []:
@@ -53,10 +55,10 @@ class BankAccountType:
     been assigned.
     """
 
-    NO_TYPE = 0
-    CHECKING = 1
-    SAVINGS = 2
-    CD = 3
+    NO_TYPE = AccountType.BANK | 0x0
+    CHECKING = AccountType.BANK | 0x1
+    SAVINGS = AccountType.BANK | 0x2
+    CD = AccountType.BANK | 0x3
 
     @staticmethod
     def list() -> []:
@@ -86,9 +88,9 @@ class InvestmentAccountType:
     The NO_TYPE type is used to indicate no account type has been assigned.
     """
 
-    NO_TYPE = 0
-    BROKERAGE = 1
-    SINGLE_FUND = 2
+    NO_TYPE = AccountType.INVESTMENT | 0x0
+    BROKERAGE = AccountType.INVESTMENT | 0x1
+    SINGLE_FUND = AccountType.INVESTMENT | 0x2
 
     @staticmethod
     def list() -> []:
