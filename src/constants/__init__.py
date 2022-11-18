@@ -6,7 +6,7 @@ The contants included in the package are
         ElementType - The basic elements in the database. This reflects
             the database table layout including Accounts, Categories,
             Securities and Transactions.
-        
+
     from Account_Types:
         AccountTypes - Specific Account types including Bank and
             Investment accounts.
@@ -20,4 +20,3 @@ The contants included in the package are
  Copyright:  (c) 2022 Lorn B Kerr
  License:    see file LICENSE
  """
-
