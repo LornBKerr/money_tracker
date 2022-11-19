@@ -27,17 +27,20 @@ def test_0201_constr(open_database):
     assert isinstance(account, Element)
     close_database(dbref)
 
+
 def test_0202_get_table(open_database):
     dbref = open_database
     account = Account(dbref)
     assert account.get_table() == "accounts"
     close_database(dbref)
 
+
 def test_0203_get_dbref(open_database):
     dbref = open_database
     account = Account(dbref)
     assert account.get_dbref() == dbref
     close_database(dbref)
+
 
 def test_0204_set_get_name(open_database):
     dbref = open_database
@@ -74,6 +77,7 @@ def test_0204_set_get_name(open_database):
     assert not result["valid"]  # bad name too long
     assert len(result["msg"]) > 0
     close_database(dbref)
+
 
 def test_0205_set_get_description(open_database):
     dbref = open_database
@@ -112,6 +116,7 @@ def test_0205_set_get_description(open_database):
     assert len(result["msg"]) > 0
     close_database(dbref)
 
+
 def test_0206_set_get_company(open_database):
     dbref = open_database
     account = Account(dbref)
@@ -147,6 +152,7 @@ def test_0206_set_get_company(open_database):
     assert not result["valid"]  # bad company too long
     assert len(result["msg"]) > 0
     close_database(dbref)
+
 
 def test_0207_set_get_account_number(open_database):
     dbref = open_database
@@ -184,6 +190,7 @@ def test_0207_set_get_account_number(open_database):
     assert len(result["msg"]) > 0
     close_database(dbref)
 
+
 def test_0208_get_set_check_writing_avail(open_database):
     dbref = open_database
     account = Account(dbref)
@@ -204,6 +211,7 @@ def test_0208_get_set_check_writing_avail(open_database):
     assert result["entry"] == account.get_check_writing_avail()
     close_database(dbref)
 
+
 def test_0209_get_set_account_separate(open_database):
     dbref = open_database
     account = Account(dbref)
@@ -223,6 +231,7 @@ def test_0209_get_set_account_separate(open_database):
     assert result["entry"] == account_values["account_separate"]
     assert result["entry"] == account.get_account_separate()
     close_database(dbref)
+
 
 def test_0210_get_set_hide_in_transaction_list(open_database):
     dbref = open_database
@@ -253,6 +262,7 @@ def test_0210_get_set_hide_in_transaction_list(open_database):
     assert result["entry"] == account.get_hide_in_transaction_list()
     close_database(dbref)
 
+
 def test_0211_get_set_hide_in_account_lists(open_database):
     dbref = open_database
     account = Account(dbref)
@@ -277,6 +287,7 @@ def test_0211_get_set_hide_in_account_lists(open_database):
     assert result["entry"] == account.get_hide_in_account_lists()
     close_database(dbref)
 
+
 def test_0212_get_default_property_values(open_database):
     dbref = open_database
     account = Account(dbref)
@@ -296,6 +307,7 @@ def test_0212_get_default_property_values(open_database):
     )
     assert account.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
+
 
 def test_0213_set_properties_from_dict(open_database):
     # set Account from array
@@ -319,6 +331,7 @@ def test_0213_set_properties_from_dict(open_database):
     assert account.get_remarks() == account_values["remarks"]
     close_database(dbref)
 
+
 def test_0214_initial_partial_account_values(open_database):
     dbref = open_database
     account = Account(dbref, sparse_values)
@@ -338,6 +351,7 @@ def test_0214_initial_partial_account_values(open_database):
     )
     assert account.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
+
 
 def test_0215_bad_column_name(open_database):
     dbref = open_database
@@ -359,6 +373,7 @@ def test_0215_bad_column_name(open_database):
     assert account.get_remarks() == account.defaults["remarks"]
     close_database(dbref)
 
+
 def test_0216_account_add(create_accounts_table):
     dbref = create_accounts_table
     account = Account(dbref, account_values)
@@ -379,6 +394,7 @@ def test_0216_account_add(create_accounts_table):
     )
     assert account.get_remarks() == account_values["remarks"]
     close_database(dbref)
+
 
 def test_0217_account_read_db(create_accounts_table):
     dbref = create_accounts_table
@@ -411,6 +427,7 @@ def test_0217_account_read_db(create_accounts_table):
     assert not account3.get_record_id == record_id
     assert account3.get_record_id() == account.defaults["record_id"]
     close_database(dbref)
+
 
 def test_0218_account_update(create_accounts_table):
     dbref = create_accounts_table
@@ -445,6 +462,7 @@ def test_0218_account_update(create_accounts_table):
     assert account2.get_remarks() == account_values["remarks"]
     close_database(dbref)
 
+
 def test_0219_item_delete(create_accounts_table):
     dbref = create_accounts_table
     account = Account(dbref, account_values)
@@ -458,5 +476,6 @@ def test_0219_item_delete(create_accounts_table):
     assert account.get_record_id() == 0
     assert account.get_name() == ""
     close_database(dbref)
+
 
 # end test_02_elements_account.py
