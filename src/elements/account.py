@@ -1,7 +1,7 @@
 """
 A basic account for the MoneyTrack program
 
-File:       account.py
+File:       elements/account.py
 Author:     Lorn B Kerr
 Copyright:  (c) 2022 Lorn B Kerr
 License:    MIT, see file License
@@ -10,7 +10,7 @@ License:    MIT, see file License
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal, Element
+from lbk_library import Element
 
 
 class Account(Element):
@@ -18,7 +18,7 @@ class Account(Element):
     Implement a basic Account in the database.
 
     This provides the common functions of all MoneyTrack Accounts. It is
-    to be extended with added functionality for ussable accounts such as
+    to be extended with added functionality for usable accounts such as
     Bank and Investment accounts.
     """
 
@@ -96,7 +96,6 @@ class Account(Element):
         self.set_properties(account_key)
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
-
         # end __init__()
 
     def set_properties(self, properties):
@@ -131,7 +130,6 @@ class Account(Element):
                     self.set_hide_in_transaction_list(properties[key])
                 elif key == "hide_in_account_lists":
                     self.set_hide_in_account_lists(properties[key])
-
         # end set_properties()
 
     def get_name(self):
@@ -144,7 +142,6 @@ class Account(Element):
         if name is None:
             name = self.defaults["name"]
         return name
-
         # end get_name()
 
     def set_name(self, name):
@@ -174,7 +171,6 @@ class Account(Element):
 
         self.update_property_flags("name", result["entry"], result["valid"])
         return result
-
         # end set_name()
 
     def get_description(self):
@@ -212,7 +208,6 @@ class Account(Element):
 
         self.update_property_flags("description", result["entry"], result["valid"])
         return result
-
         # end set_description()
 
     def get_company(self):
@@ -220,13 +215,12 @@ class Account(Element):
         Get the financial company holding this account.
 
         Returns:
-            (str) the finanacila company of the account.
+            (str) the finanacial company hosting the account.
         """
         company = self._get_property("company")
         if company is None:
             company = self.defaults["company"]
         return company
-
         # end get_company()
 
     def set_company(self, company):
@@ -250,7 +244,6 @@ class Account(Element):
             self._set_property("company", "")
         self.update_property_flags("company", result["entry"], result["valid"])
         return result
-
         # end set_company()
 
     def get_account_number(self):
@@ -264,7 +257,6 @@ class Account(Element):
         if account_number is None:
             account_number = self.defaults["account_number"]
         return account_number
-
         # end get_account_number()
 
     def set_account_number(self, account_number: str) -> dict[str, Any]:
@@ -288,7 +280,6 @@ class Account(Element):
             self._set_property("account_number", "")
         self.update_property_flags("account_number", result["entry"], result["valid"])
         return result
-
         # end set_account_number()
 
     def get_check_writing_avail(self) -> bool:
@@ -306,11 +297,11 @@ class Account(Element):
         if check_writing_avail is None:
             check_writing_avail = self.defaults["check_writing_avail"]
         return check_writing_avail
-
         # end get_check_writing_avail()
 
     def set_check_writing_avail(self, check_writing_avail: bool) -> dict[str, Any]:
-        """Set the check_writing_avail value of the account.
+        """
+        Set the check_writing_avail value of the account.
 
         Parameters:
             check_writing_avail (bool): True if the account has checking
@@ -328,7 +319,6 @@ class Account(Element):
             self._set_property("check_writing_avail", False)
         return result
         self.update_property_flags("account_separate", result["entry"], result["valid"])
-
         # end set_check_writing_avail()
 
     def get_account_separate(self) -> bool:
@@ -344,15 +334,16 @@ class Account(Element):
         if account_separate is None:
             account_separate = self.defaults["account_separate"]
         return account_separate
-
         # end get_account_separate()
 
     def set_account_separate(self, account_separate: bool) -> dict[str, Any]:
-        """Set the account_separate value of the account.
+        """
+        Set the account_separate value of the account.
 
         Parameters:
             account_separate (bool): True if the account is to be kept
                 separate, False if not
+
         Returns:
             (dict): ['entry'] - (str) the updated account_separate value
                     ['valid'] - (bool) True if the operation suceeded,
@@ -366,7 +357,6 @@ class Account(Element):
             self._set_property("account_separate", False)
         return result
         self.update_property_flags("account_separate", result["entry"], result["valid"])
-
         # end set_account_separate()
 
     def get_hide_in_transaction_list(self) -> bool:
@@ -380,13 +370,13 @@ class Account(Element):
         if hide_in_transaction_list is None:
             hide_in_transaction_list = self.defaults["hide_in_transaction_list"]
         return hide_in_transaction_list
-
         # end get_hide_in_transaction_list()
 
     def set_hide_in_transaction_list(
         self, hide_in_transaction_list: bool
     ) -> dict[str, Any]:
-        """Set the account to be hiiden in transaction lists..
+        """
+        Set the account to be hiiden in transaction lists..
 
         Parameters:
             hide_in_transaction_list (bool): True if the account is to be kept
@@ -406,7 +396,6 @@ class Account(Element):
         self.update_property_flags(
             "hide_in_transaction_list", result["entry"], result["valid"]
         )
-
         # end set_hide_in_transaction_list()
 
     def get_hide_in_account_lists(self) -> bool:
@@ -420,11 +409,11 @@ class Account(Element):
         if hide_in_account_lists is None:
             hide_in_account_lists = self.defaults["hide_in_account_lists"]
         return hide_in_account_lists
-
         # end get_hide_in_account_lists()
 
     def set_hide_in_account_lists(self, hide_in_account_lists: bool) -> dict[str, Any]:
-        """Set the account to be hiiden in transaction lists..
+        """
+        Set the account to be hiiden in transaction lists..
 
         Parameters:
             hide_in_account_lists (bool): True if the account is to be
@@ -444,8 +433,6 @@ class Account(Element):
         self.update_property_flags(
             "hide_in_account_lists", result["entry"], result["valid"]
         )
-
         # end set_hide_in_account_lists()
-
 
 # end class Account
