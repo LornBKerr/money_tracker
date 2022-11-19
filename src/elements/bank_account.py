@@ -10,11 +10,8 @@ License:    MIT, see file License
 from copy import deepcopy
 from typing import Any
 
-from lbk_library import Dbal  # , Element, Validate
-
-from constants import AccountType, BankAccountType
-
-from .account import Account
+from constants.account_types import AccountType, BankAccountType
+from elements.account import Account
 
 
 class BankAccount(Account):
@@ -30,7 +27,7 @@ class BankAccount(Account):
         Define a Bank Account.
 
         A Bank Account will always be type 'AccountType.BANK'. The
-        subtype must be one of BankAccountType.CD,
+        account_account_subtype must be one of BankAccountType.CD,
         BankAccountType.CHECKING, or BankAccountType.SAVINGS.
 
         The 'column' can be set to None, "record_id", or "account_name".
@@ -77,13 +74,13 @@ class BankAccount(Account):
             "hide_in_account_lists": False,
             "check_writing_avail": False,
             "account_type": AccountType.BANK,
-            "subtype": BankAccountType.NO_TYPE,
+            "account_subtype": BankAccountType.NO_TYPE,
             "remarks": "",
         }
         self.set_initial_values(deepcopy(self.defaults))
         self.clear_value_valid_flags()
 
-        # get available subtypes for a bank acoount.
+        # get available account_subtypes for a bank acoount.
 
         if isinstance(account_key, dict):
             # make sure there are no missing keys
@@ -107,7 +104,6 @@ class BankAccount(Account):
         self.set_properties(account_key)
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
-
         # end __init__()
 
     def set_properties(self, properties):
@@ -129,9 +125,8 @@ class BankAccount(Account):
             for key in properties.keys():
                 if key == "account_type":
                     self.set_account_type(properties[key])
-                elif key == "subtype":
-                    self.set_subtype(properties[key])
-
+                elif key == "account_subtype":
+                    self.set_account_subtype(properties[key])
         # end set_properties()
 
     def get_account_type(self):
@@ -145,7 +140,6 @@ class BankAccount(Account):
         if account_type is not AccountType.BANK:
             account_type = AccountType.BANK
         return account_type
-
         # end get_type()
 
     def set_account_type(self, account_type):
@@ -181,75 +175,72 @@ class BankAccount(Account):
 
         self.update_property_flags("account_type", result["entry"], result["valid"])
         return result
-
         # end set_account_type()
 
-    def get_subtype(self):
+    def get_account_subtype(self):
         """
         Get the specific Bank Account type. This will be one of the types
         defined in the constants BankAccountType. These type include
-        'CHECKING', 'SAVINGS', and 'CD'. The subtype BankAccountType.NO_TYPE
-        is returned for invalid subtypes.
+        'CHECKING', 'SAVINGS', and 'CD'. The account_subtype BankAccountType.NO_TYPE
+        is returned for invalid account_subtypes.
 
         Return:
             (str) One of the constant BankAccountType members
         """
-        subtype = self._get_property("subtype")
-        if subtype not in BankAccountType.list() or subtype is None:
-            subtype = BankAccountType.NO_TYPE
-        return subtype
+        account_subtype = self._get_property("account_subtype")
+        if account_subtype not in BankAccountType.list() or account_subtype is None:
+            account_subtype = BankAccountType.NO_TYPE
+        return account_subtype
+        # end get_account_subtype()
 
-        # end get_subtype()
-
-    def set_subtype(self, subtype):
+    def set_account_subtype(self, account_subtype):
         """
         Set the Bank Account's specific type.
 
-        This subtype must be one of the members of BankAccountType. This
-        includes 'CHECKING', 'SAVINGS', or 'CD'. The 'NO_TYPE' subtype
-        indicates the subtype has not been assigned or the assigned type
+        This account_subtype must be one of the members of BankAccountType. This
+        includes 'CHECKING', 'SAVINGS', or 'CD'. The 'NO_TYPE' account_subtype
+        indicates the account_subtype has not been assigned or the assigned type
         is invalid.
-        if the subtype is not valid, return an invalid result.
+        if the account_subtype is not valid, return an invalid result.
 
         Parameters:
-            subtype (Enum): the specific type of this Account. The
-                subtype is required and must be one of the members of
-                BankAccountType If the supplied subtype is not valid,
+            account_subtype (Enum): the specific type of this Account. The
+                account_subtype is required and must be one of the members of
+                BankAccountType If the supplied account_subtype is not valid,
                 the account type is set to the constant
                 BankAccountType.NO_TYPE and the result will be invalid.
 
         Returns:
-            (dict): ['entry'] - (str) the updated subtype
+            (dict): ['entry'] - (str) the updated account_subtype
                     ['valid'] - (bool) True if the operation suceeded,
                         False otherwise
                     ['msg'] - (str) Error message if not valid
         """
         result = {}
         if (
-            subtype is not None
-            and subtype in BankAccountType.list()
-            and subtype != BankAccountType.NO_TYPE
+            account_subtype is not None
+            and account_subtype in BankAccountType.list()
+            and account_subtype != BankAccountType.NO_TYPE
         ):
-            result["entry"] = subtype
+            result["entry"] = account_subtype
             result["valid"] = True
             result["msg"] = ""
         else:
             result["entry"] = BankAccountType.NO_TYPE
             result["valid"] = False
-            result["msg"] = "Invalid bankaccount type ('" + str(subtype) + "')."
-        self._set_property("subtype", result["entry"])
+            result["msg"] = "Invalid bankaccount type ('" + str(account_subtype) + "')."
+        self._set_property("account_subtype", result["entry"])
 
-        self.update_property_flags("subtype", result["entry"], result["valid"])
+        self.update_property_flags("account_subtype", result["entry"], result["valid"])
 
         if result["valid"]:
-            if subtype == BankAccountType.CHECKING:
+            if account_subtype == BankAccountType.CHECKING:
                 self.set_check_writing_avail(True)
-            elif subtype == BankAccountType.CD:
+            elif account_subtype == BankAccountType.CD:
                 self.set_check_writing_avail(False)
 
         return result
-
-        # end set_subtype()
+        # end set_account_subtype()
 
 
 # end class Bank Account
