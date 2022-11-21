@@ -20,6 +20,7 @@ class AccountType:
     The NO_TYPE type is used to indicate no account type has been assigned.
     """
 
+    ACCOUNT_TYPE_NASK = ElementType.ELEMENT_TYPE_MASK | 0x000F0
     NO_TYPE = ElementType.ACCOUNT | 0x00000
     BANK = ElementType.ACCOUNT | 0x00010
     INVESTMENT = ElementType.ACCOUNT | 0x00020
@@ -55,6 +56,10 @@ class BankAccountType:
     been assigned.
     """
 
+    BANK_ACCOUNT_TYPE_NASK = (
+        ElementType.ELEMENT_TYPE_MASK | AccountType.BANK | 0x0000F
+    )
+
     NO_TYPE = AccountType.BANK | 0x0
     CHECKING = AccountType.BANK | 0x1
     SAVINGS = AccountType.BANK | 0x2
@@ -88,6 +93,9 @@ class InvestmentAccountType:
     The NO_TYPE type is used to indicate no account type has been assigned.
     """
 
+    INVESTMENT_ACCOUNT_TYPE_MASK = (
+        ElementType.ELEMENT_TYPE_MASK | AccountType.INVESTMENT | 0x0000F
+    )
     NO_TYPE = AccountType.INVESTMENT | 0x0
     BROKERAGE = AccountType.INVESTMENT | 0x1
     SINGLE_FUND = AccountType.INVESTMENT | 0x2
