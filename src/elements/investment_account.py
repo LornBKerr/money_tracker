@@ -8,11 +8,12 @@ License:    MIT, see file License
 """
 
 from copy import deepcopy
-from typing import Any
+from typing import Any, Union
 
-from constants import AccountType, InvestmentAccountType
+from lbk_library import Dbal
 
-from .account import Account
+from constants.account_types import AccountType, InvestmentAccountType
+from elements.account import Account
 
 
 class InvestmentAccount(Account):
@@ -24,12 +25,14 @@ class InvestmentAccount(Account):
     accounts.
     """
 
-    def __init__(self, dbref, account_key=None, column=None):
+    def __init__(
+        self, dbref: Dbal, account_key: Union[int, str] = None, column: str = None
+    ) -> None:
         """
         Define an Investment Account.
 
         An Investment Account will always be type 'AccountType.INVESTMENT'.
-         The subtype must be one of InvestmentAccountType.BROKERAGE or
+         The account_subtype must be one of InvestmentAccountType.BROKERAGE or
         InvestmentAccountType.SINGLE_FUND.
 
         The 'column' can be set to None, "record_id", or "account_name".
@@ -77,13 +80,11 @@ class InvestmentAccount(Account):
             "check_writing_avail": False,
             "tax_deferred": False,
             "account_type": AccountType.INVESTMENT,
-            "subtype": InvestmentAccountType.NO_TYPE,
+            "account_subtype": InvestmentAccountType.NO_TYPE,
             "remarks": "",
         }
         self.set_initial_values(deepcopy(self.defaults))
         self.clear_value_valid_flags()
-
-        # get available subtypes for An Investment acoount.
 
         if isinstance(account_key, dict):
             # make sure there are no missing keys
@@ -107,10 +108,9 @@ class InvestmentAccount(Account):
         self.set_properties(account_key)
         self.set_initial_values(self.get_properties())
         self.clear_value_changed_flags()
-
         # end __init__()
 
-    def set_properties(self, properties):
+    def set_properties(self, properties: dict[str, Any]) -> None:
         """
         Set the values of the Account properties array.
 
@@ -128,44 +128,42 @@ class InvestmentAccount(Account):
 
             for key in properties.keys():
                 if key == "account_type":
-                    self.set_account_type(properties[key])
-                elif key == "subtype":
-                    self.set_subtype(properties[key])
+                    self.__set_account_type(properties[key])
+                elif key == "account_subtype":
+                    self.set_account_subtype(properties[key])
                 elif key == "tax_deferred":
                     self.set_tax_deferred(properties[key])
-
         # end set_properties()
 
-    def get_account_type(self):
+    def get_account_type(self) -> int:
         """
         Get the Account type.
 
-        This will be the constant AccountType.INVESTMENT.
+        This will always be the constant AccountType.INVESTMENT.
 
         Return:
             (str) The constant AccountType.INVESTMENT.
         """
-        account_type = self._get_property("account_type")
-        if account_type is not AccountType.INVESTMENT:
-            account_type = AccountType.INVESTMENT
-        return account_type
+        # always return the AccountType.INVESTMENT type
+        return AccountType.INVESTMENT
+        # end get_account_type()
 
-        # end get_type()
-
-    def set_account_type(self, account_type):
+    def __set_account_type(
+        self, account_type: AccountType = AccountType.INVESTMENT
+    ) -> dict[str, Any]:
         """
         Set the Account's type.
 
         This account type must be constant AccountType.INVESTMENT. If
-        account_type is not AccountType.INVESTMENT, return an invalid
-        result.
+        the supplied account_type is not AccountType.INVESTMENT, set the
+        result to AccountType.INVESTMENT and return a valid result.
 
         Parameters:
-            account_type (Enum): the type of this Account. The account type is
-                required and must be the constant AccountType.INVESTMENT. If
-                the supplied account_type is not valid, the account type is set
-                to the constant AccountType.NO_TYPE and the result will be
-                invalid.
+            account_type (int): the type of this Account. The account
+            type is optional and must be the constant
+            AccountType.INVESTMENT. If the supplied account_type is not
+            valid, the account type is set to the constant
+            AccountType.INVESTMENT and the result will be valid.
 
         Returns:
             (dict): ['entry'] - (str) the updated account_type
@@ -174,83 +172,84 @@ class InvestmentAccount(Account):
                     ['msg'] - (str) Error message if not valid
         """
         result = {}
-        if account_type == AccountType.INVESTMENT:
-            result["entry"] = account_type
-            result["valid"] = True
-            result["msg"] = ""
-        else:
-            result["entry"] = AccountType.NO_TYPE
-            result["valid"] = False
-            result["msg"] = "Invalid account type ('" + str(account_type) + "')."
-        self._set_property("account_type", result["entry"])
 
+        if account_type != AccountType.INVESTMENT:
+            account_type = AccountType.INVESTMENT
+
+        result["entry"] = account_type
+        result["valid"] = True
+        result["msg"] = ""
+
+        self._set_property("account_type", result["entry"])
         self.update_property_flags("account_type", result["entry"], result["valid"])
         return result
-
         # end set_account_type()
 
-    def get_subtype(self):
+    def get_account_subtype(self) -> int:
         """
         Get the specific Investment Account type. This will be one of the types
         defined in the constants InvestmentAccountType. These type
-        include 'BROKERAGE' and 'SINGLE_FUND'. The subtype
-        InvestmentAccountType.NO_TYPE is returned for invalid subtypes.
+        include 'BROKERAGE' and 'SINGLE_FUND'. The account_subtype
+        InvestmentAccountType.NO_TYPE is returned for invalid account_subtypes.
 
         Return:
             (str) One of the constant InvestmentAccountType members
         """
-        subtype = self._get_property("subtype")
-        if subtype not in InvestmentAccountType.list() or subtype is None:
-            subtype = InvestmentAccountType.NO_TYPE
-        return subtype
+        account_subtype = self._get_property("account_subtype")
+        if (
+            account_subtype not in InvestmentAccountType.list()
+            or account_subtype is None
+        ):
+            account_subtype = InvestmentAccountType.NO_TYPE
+        return account_subtype
+        # end get_account_subtype()
 
-        # end get_subtype()
-
-    def set_subtype(self, subtype):
+    def set_account_subtype(
+        self, account_subtype: InvestmentAccountType
+    ) -> dict[str, Any]:
         """
         Set the Investment Account's specific type.
 
-        This subtype must be one of the members of InvestmentAccountType.
+        This account_subtype must be one of the members of InvestmentAccountType.
         This includes 'BROKERAGE' or 'SINGLE_FUND'. The 'NO_TYPE'
-        subtype indicates the subtype has not been assigned or the
+        account_subtype indicates the account_subtype has not been assigned or the
         assigned type is invalid.
 
-        If the subtype is not valid, return an invalid result.
+        If the account_subtype is not valid, return an invalid result.
 
         Parameters:
-            subtype (Enum): the specific type of this Account. The
-                subtype is required and must be one of the members of
-                InvestmentAccountType If the supplied subtype is not
+            account_subtype (Enum): the specific type of this Account. The
+                account_subtype is required and must be one of the members of
+                InvestmentAccountType If the supplied account_subtype is not
                 valid, the account type is set to the constant
                 InvestmentAccountType.NO_TYPE and the result will be
                 invalid.
 
         Returns:
-            (dict): ['entry'] - (str) the updated subtype
+            (dict): ['entry'] - (str) the updated account_subtype
                     ['valid'] - (bool) True if the operation suceeded,
                         False otherwise
                     ['msg'] - (str) Error message if not valid
         """
         result = {}
         if (
-            subtype is not None
-            and subtype in InvestmentAccountType.list()
-            and subtype != InvestmentAccountType.NO_TYPE
+            account_subtype is not None
+            and account_subtype in InvestmentAccountType.list()
+            and account_subtype != InvestmentAccountType.NO_TYPE
         ):
-            result["entry"] = subtype
+            result["entry"] = account_subtype
             result["valid"] = True
             result["msg"] = ""
         else:
             result["entry"] = InvestmentAccountType.NO_TYPE
             result["valid"] = False
-            result["msg"] = "Invalid bankaccount type ('" + str(subtype) + "')."
-        self._set_property("subtype", result["entry"])
+            result["msg"] = "Invalid bankaccount type ('" + str(account_subtype) + "')."
+        self._set_property("account_subtype", result["entry"])
 
-        self.update_property_flags("subtype", result["entry"], result["valid"])
+        self.update_property_flags("account_subtype", result["entry"], result["valid"])
 
         return result
-
-        # end set_subtype()
+        # end set_account_subtype()
 
     def get_tax_deferred(self) -> bool:
         """
@@ -265,7 +264,6 @@ class InvestmentAccount(Account):
         if tax_deferred is None:
             tax_deferred = self.defaults["tax_deferred"]
         return tax_deferred
-
         # end get_tax_deferred()
 
     def set_tax_deferred(self, tax_deferred: bool) -> dict[str, Any]:
@@ -287,7 +285,6 @@ class InvestmentAccount(Account):
             self._set_property("tax_deferred", False)
         return result
         self.update_property_flags("tax_deferred", result["entry"], result["valid"])
-
         # end set_tax_deferred()
 
 

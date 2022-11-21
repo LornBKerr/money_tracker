@@ -7,67 +7,28 @@ src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+from db_support import close_database, create_accounts_table, database, open_database
 from lbk_library import Dbal
 
-from constants import AccountType, BankAccountType, InvestmentAccountType
-from elements import Account, InvestmentAccount
-
-database = "test.db"
-
-
-def close_database(dbref):
-    dbref.sql_close()
-
-
-@pytest.fixture
-def open_database(tmpdir):
-    path = tmpdir.join(database)
-    dbref = Dbal()
-    dbref.sql_connect(path)
-    return dbref
-
-
-@pytest.fixture
-def create_accounts_table(open_database):
-    dbref = open_database
-    dbref.sql_query("DROP TABLE IF EXISTS 'accounts'")
-    create_table = (
-        'CREATE TABLE IF NOT EXISTS "accounts" '
-        + '("record_id" INTEGER NOT NULL, '
-        + '"name" TEXT NOT NULL, '
-        + '"description" TEXT, '
-        + '"company" TEXT, '
-        + '"account_number" TEXT, '
-        + '"account_separate" BOOLEAN, '
-        + '"hide_in_transaction_list" BOOLEAN, '
-        + '"hide_in_account_lists" BOOLEAN, '
-        + '"check_writing_avail" BOOLEAN, '
-        + '"account_type" INTEGER, '
-        + '"subtype" INTEGER, '
-        + '"tax_deferred" BOOLEAN, '
-        + '"remarks" TEXT,'
-        + 'PRIMARY KEY("record_id" AUTOINCREMENT)'
-        + ")"
-    )
-    result = dbref.sql_query(create_table)
-    return dbref
-
+from constants.account_types import AccountType, BankAccountType, InvestmentAccountType
+from elements.account import Account
+from elements.investment_account import InvestmentAccount
 
 # set account values for tests
 account_values = {
     "record_id": 10,
-    "name": "My Account",
+    "account_type": AccountType.INVESTMENT,
+    "account_subtype": InvestmentAccountType.NO_TYPE,
+    "name": "Cash",
     "description": "a description",
     "company": "SlimyBank",
     "account_number": "124356987",
+    "check_writing_avail": False,
     "account_separate": False,
     "hide_in_transaction_list": False,
     "hide_in_account_lists": False,
-    "check_writing_avail": True,
     "tax_deferred": False,
-    "account_type": AccountType.INVESTMENT,
-    "subtype": InvestmentAccountType.NO_TYPE,
-    "remarks": "a bank account",
+    "remarks": "an investment account",
 }
 
 sparse_values = {
@@ -102,62 +63,58 @@ def test_0503_get_dbref(open_database):
 def test_0504_set_get_type(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
-    account._set_property("account_type", account_values["account_type"])
-    assert account_values["account_type"] == account.get_account_type()
+    assert account.defaults["account_type"] == AccountType.INVESTMENT
+    assert account.get_account_type() == AccountType.INVESTMENT
+
     account._set_property("account_type", None)
-    assert account.defaults["account_type"] == account.get_account_type()
-    result = account.set_account_type(None)
-    assert not result["valid"]
-    assert result["entry"] == AccountType.NO_TYPE
-    assert len(result["msg"]) > 0
-    result = account.set_account_type(AccountType.NO_TYPE)
-    assert not result["valid"]
-    assert result["entry"] == AccountType.NO_TYPE
-    assert len(result["msg"]) > 0
-    result = account.set_account_type(AccountType.BANK)
-    assert not result["valid"]
-    assert result["entry"] == AccountType.NO_TYPE
-    assert len(result["msg"]) > 0
-    result = account.set_account_type(AccountType.INVESTMENT)
-    assert result["valid"]
-    assert result["entry"] == AccountType.INVESTMENT
-    assert len(result["msg"]) == 0
-    account_type = account._get_property("account_type")
-    assert account_type == account_values["account_type"]
-    assert account.get_account_type() == account_values["account_type"]
+    assert account.get_account_type() == AccountType.INVESTMENT
+
+    account._set_property("account_type", None)
+    assert account.get_account_type() == AccountType.INVESTMENT
+
+    account.set_properties({"account_type": AccountType.NO_TYPE})
+    assert account.get_account_type() == AccountType.INVESTMENT
+
+    account._set_property("account_type", AccountType.BANK)
+    assert account.get_account_type() == AccountType.INVESTMENT
     close_database(dbref)
 
 
-def test_0505_set_get_subtype(open_database):
+def test_0505_set_get_account_subtype(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
-    account._set_property("subtype", account_values["subtype"])
-    assert account_values["subtype"] == account.get_subtype()
-    account._set_property("subtype", None)
-    assert account.defaults["subtype"] == account.get_subtype()
-    result = account.set_subtype(None)
+    account._set_property("account_subtype", account_values["account_subtype"])
+    assert account_values["account_subtype"] == account.get_account_subtype()
+
+    account._set_property("account_subtype", None)
+    assert account.defaults["account_subtype"] == account.get_account_subtype()
+    result = account.set_account_subtype(None)
     assert not result["valid"]
     assert result["entry"] == InvestmentAccountType.NO_TYPE
     assert len(result["msg"]) > 0
-    result = account.set_subtype(InvestmentAccountType.NO_TYPE)
+
+    result = account.set_account_subtype(InvestmentAccountType.NO_TYPE)
     assert not result["valid"]
     assert result["entry"] == InvestmentAccountType.NO_TYPE
     assert len(result["msg"]) > 0
-    result = account.set_subtype(InvestmentAccountType.BROKERAGE)
+
+    result = account.set_account_subtype(InvestmentAccountType.BROKERAGE)
     assert result["valid"]
     assert result["entry"] == InvestmentAccountType.BROKERAGE
     assert len(result["msg"]) == 0
-    assert account.get_subtype() == InvestmentAccountType.BROKERAGE
-    result = account.set_subtype(InvestmentAccountType.SINGLE_FUND)
+    assert account.get_account_subtype() == InvestmentAccountType.BROKERAGE
+
+    result = account.set_account_subtype(InvestmentAccountType.SINGLE_FUND)
     assert result["valid"]
     assert result["entry"] == InvestmentAccountType.SINGLE_FUND
     assert len(result["msg"]) == 0
-    assert account.get_subtype() == InvestmentAccountType.SINGLE_FUND
-    result = account.set_subtype(BankAccountType.CD)
+    assert account.get_account_subtype() == InvestmentAccountType.SINGLE_FUND
+
+    result = account.set_account_subtype(BankAccountType.CD)
     assert not result["valid"]
     assert result["entry"] == InvestmentAccountType.NO_TYPE
     assert len(result["msg"]) > 0
-    assert account.get_subtype() == InvestmentAccountType.NO_TYPE
+    assert account.get_account_subtype() == InvestmentAccountType.NO_TYPE
     close_database(dbref)
 
 
@@ -167,14 +124,18 @@ def test_0506_get_set_tax_deferred(open_database):
     defaults = account.get_initial_values()
     account._set_property("tax_deferred", account_values["tax_deferred"])
     assert account_values["tax_deferred"] == account.get_tax_deferred()
+
     account._set_property("tax_deferred", None)
     assert defaults["tax_deferred"] == account.get_tax_deferred()
+
     result = account.set_tax_deferred(None)
     assert not result["valid"]
     assert result["entry"] == 0
+
     result = account.set_tax_deferred(3)
     assert not result["valid"]
     assert result["entry"] == 0
+
     result = account.set_tax_deferred(account_values["tax_deferred"])
     assert result["valid"]
     assert result["entry"] == account_values["tax_deferred"]
@@ -187,7 +148,7 @@ def test_0507_get_default_property_values(open_database):
     account = InvestmentAccount(dbref)
     assert isinstance(account.get_properties(), dict)
     assert account.get_account_type() == account.defaults["account_type"]
-    assert account.get_subtype() == account.defaults["subtype"]
+    assert account.get_account_subtype() == account.defaults["account_subtype"]
     assert account.get_tax_deferred() == account.defaults["tax_deferred"]
     assert account.get_record_id() == account.defaults["record_id"]
     assert account.get_name() == account.defaults["name"]
@@ -207,14 +168,13 @@ def test_0507_get_default_property_values(open_database):
     close_database(dbref)
 
 
-def test_0507_set_properties_from_dict(open_database):
+def test_0508_set_properties_from_dict(open_database):
     # set InvestmentAccount from array
     dbref = open_database
     account = InvestmentAccount(dbref)
     account.set_properties(account_values)
-    assert len(account.get_properties()) == len(account_values)
     assert account.get_account_type() == account_values["account_type"]
-    assert account.get_subtype() == account_values["subtype"]
+    assert account.get_account_subtype() == account_values["account_subtype"]
     assert account.get_tax_deferred() == account_values["tax_deferred"]
     assert account.get_record_id() == account_values["record_id"]
     assert account.get_name() == account_values["name"]
@@ -234,14 +194,13 @@ def test_0507_set_properties_from_dict(open_database):
     close_database(dbref)
 
 
-def test_0508_initial_partial_account_values(open_database):
+def test_0509_initial_partial_account_values(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref, sparse_values)
-    assert len(account.get_properties()) == len(account_values)
     assert account.get_record_id() == sparse_values["record_id"]
     assert account.get_name() == sparse_values["name"]
     assert account.get_account_type() == sparse_values["account_type"]
-    assert account.get_subtype() == account.defaults["subtype"]
+    assert account.get_account_subtype() == account.defaults["account_subtype"]
     assert account.get_tax_deferred() == account.defaults["tax_deferred"]
     assert account.get_description() == account.defaults["description"]
     assert account.get_company() == account.defaults["company"]
@@ -259,13 +218,12 @@ def test_0508_initial_partial_account_values(open_database):
     close_database(dbref)
 
 
-def test_0509_bad_column_name(open_database):
+def test_0510_bad_column_name(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref, None, "a_column")
     assert isinstance(account.get_properties(), dict)
-    assert len(account.get_properties()) == len(account_values)
     assert account.get_account_type() == account.defaults["account_type"]
-    assert account.get_subtype() == account.defaults["subtype"]
+    assert account.get_account_subtype() == account.defaults["account_subtype"]
     assert account.get_tax_deferred() == account.defaults["tax_deferred"]
     assert account.get_record_id() == account.defaults["record_id"]
     assert account.get_name() == account.defaults["name"]
@@ -285,7 +243,7 @@ def test_0509_bad_column_name(open_database):
     close_database(dbref)
 
 
-def test_0510_account_add(create_accounts_table):
+def test_0511_account_add(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref, account_values)
     record_id = account.add()
@@ -294,7 +252,7 @@ def test_0510_account_add(create_accounts_table):
     close_database(dbref)
 
 
-def test_0511_account_read_db(create_accounts_table):
+def test_0512_account_read_db(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref)
     account.set_properties(account_values)
@@ -302,7 +260,7 @@ def test_0511_account_read_db(create_accounts_table):
     assert record_id == 1
     # read db for existing account
     assert account.get_account_type() == account_values["account_type"]
-    assert account.get_subtype() == account_values["subtype"]
+    assert account.get_account_subtype() == account_values["account_subtype"]
     assert account.get_tax_deferred() == account_values["tax_deferred"]
     assert account.get_record_id() == record_id
     assert account.get_name() == account_values["name"]
@@ -325,7 +283,7 @@ def test_0511_account_read_db(create_accounts_table):
     assert len(account3.get_properties()) == len(account_values)
     assert not account3.get_record_id == record_id
     assert account3.get_account_type() == account.defaults["account_type"]
-    assert account3.get_subtype() == account.defaults["subtype"]
+    assert account3.get_account_subtype() == account.defaults["account_subtype"]
     assert account3.get_record_id() == account.defaults["record_id"]
     assert account3.get_name() == account.defaults["name"]
     assert account3.get_description() == account.defaults["description"]
@@ -345,7 +303,7 @@ def test_0511_account_read_db(create_accounts_table):
     close_database(dbref)
 
 
-def test_0512_account_update(create_accounts_table):
+def test_0513_account_update(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref)
     account.set_properties(account_values)
@@ -361,7 +319,7 @@ def test_0512_account_update(create_accounts_table):
     account2 = InvestmentAccount(dbref, 1)
     assert account2.get_properties() is not None
     assert account2.get_account_type() == account_values["account_type"]
-    assert account2.get_subtype() == account_values["subtype"]
+    assert account2.get_account_subtype() == account_values["account_subtype"]
     assert account2.get_tax_deferred() == account_values["tax_deferred"]
     assert account2.get_record_id() == 1
     assert account2.get_name() == account_values["name"]
@@ -380,7 +338,7 @@ def test_0512_account_update(create_accounts_table):
     close_database(dbref)
 
 
-def test_0513_item_delete(create_accounts_table):
+def test_0514_item_delete(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref, account_values)
     account.add()
@@ -390,10 +348,9 @@ def test_0513_item_delete(create_accounts_table):
     # make sure it is really gone
     account = InvestmentAccount(dbref, 1)
     assert isinstance(account.get_properties(), dict)
-    assert len(account.get_properties()) == len(account_values)
     assert account.get_record_id() == 0
     assert account.get_name() == ""
     close_database(dbref)
 
 
-# end test_05_elements_investment_account
+# end test_04_elements_investment_account
