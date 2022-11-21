@@ -8,7 +8,9 @@ License:    MIT, see file License
 """
 
 from copy import deepcopy
-from typing import Any
+from typing import Any, Union
+
+from lbk_library import Dbal
 
 from constants.account_types import AccountType, BankAccountType
 from elements.account import Account
@@ -22,7 +24,9 @@ class BankAccount(Account):
     specific to Bank accounts such as checking, savings and CD accounts.
     """
 
-    def __init__(self, dbref, account_key=None, column=None):
+    def __init__(
+        self, dbref: Dbal, account_key: Union[int, str] = None, column: str = None
+    ) -> None:
         """
         Define a Bank Account.
 
@@ -106,7 +110,7 @@ class BankAccount(Account):
         self.clear_value_changed_flags()
         # end __init__()
 
-    def set_properties(self, properties):
+    def set_properties(self, properties: dict[str, Any]) -> None:
         """
         Set the values of the Account properties array.
 
@@ -124,37 +128,40 @@ class BankAccount(Account):
 
             for key in properties.keys():
                 if key == "account_type":
-                    self.set_account_type(properties[key])
+                    self.__set_account_type(properties[key])
                 elif key == "account_subtype":
                     self.set_account_subtype(properties[key])
         # end set_properties()
 
-    def get_account_type(self):
+    def get_account_type(self) -> int:
         """
-        Get the Account type. This will be the constant AccountType.BANK.
+        Get the Account type.
+
+        This will always be the constant AccountType.BANK.
 
         Return:
             (str) The constant AccountType.BANK.
         """
-        account_type = self._get_property("account_type")
-        if account_type is not AccountType.BANK:
-            account_type = AccountType.BANK
-        return account_type
-        # end get_type()
+        # always return the AccountType.BANK type
+        return AccountType.BANK
+        # end get_account_type()
 
-    def set_account_type(self, account_type):
+    def __set_account_type(
+        self, account_type: AccountType = AccountType.BANK
+    ) -> dict[str, Any]:
         """
         Set the Account's type.
 
-        This account type must be constant AccountType.BANK. If account_type is
-        not AccountType.BANK, return an invalid result.
+        This account type must be constant AccountType.BANK. If the
+        supplied account_type is not AccountType.BANK, set the result to
+        AccountType.BANK and return a valid result.
 
         Parameters:
-            account_type (Enum): the type of this Account. The account type is
-                required and must be the constant AccountType.BANK. If
-                the supplied account_type is not valid, the account type is set
-                to the constant AccountType.NO_TYPE and the result will be
-                invalid.
+            account_type (int): the type of this Account. The account
+            type is optional and must be the constant AccountType.BANK.
+            If the supplied account_type is not valid, the account type
+            is set to the constant AccountType.BANK and the result will
+            be valid.
 
         Returns:
             (dict): ['entry'] - (str) the updated account_type
@@ -163,26 +170,25 @@ class BankAccount(Account):
                     ['msg'] - (str) Error message if not valid
         """
         result = {}
-        if account_type == AccountType.BANK:
-            result["entry"] = account_type
-            result["valid"] = True
-            result["msg"] = ""
-        else:
-            result["entry"] = AccountType.NO_TYPE
-            result["valid"] = False
-            result["msg"] = "Invalid account type ('" + str(account_type) + "')."
-        self._set_property("account_type", result["entry"])
 
+        if account_type != AccountType.BANK:
+            account_type = AccountType.BANK
+
+        result["entry"] = account_type
+        result["valid"] = True
+        result["msg"] = ""
+
+        self._set_property("account_type", result["entry"])
         self.update_property_flags("account_type", result["entry"], result["valid"])
         return result
         # end set_account_type()
 
-    def get_account_subtype(self):
+    def get_account_subtype(self) -> int:
         """
         Get the specific Bank Account type. This will be one of the types
         defined in the constants BankAccountType. These type include
-        'CHECKING', 'SAVINGS', and 'CD'. The account_subtype BankAccountType.NO_TYPE
-        is returned for invalid account_subtypes.
+        'CHECKING', 'SAVINGS', and 'CD'. The account_subtype
+        BankAccountType.NO_TYPE is returned for invalid account_subtypes.
 
         Return:
             (str) One of the constant BankAccountType members
@@ -193,22 +199,23 @@ class BankAccount(Account):
         return account_subtype
         # end get_account_subtype()
 
-    def set_account_subtype(self, account_subtype):
+    def set_account_subtype(self, account_subtype: BankAccountType) -> dict[str, Any]:
         """
         Set the Bank Account's specific type.
 
-        This account_subtype must be one of the members of BankAccountType. This
-        includes 'CHECKING', 'SAVINGS', or 'CD'. The 'NO_TYPE' account_subtype
-        indicates the account_subtype has not been assigned or the assigned type
-        is invalid.
-        if the account_subtype is not valid, return an invalid result.
+        This account_subtype must be one of the members of
+        BankAccountType. This includes 'CHECKING', 'SAVINGS', or 'CD'.
+        The 'NO_TYPE' account_subtype indicates the account_subtype has
+        not been assigned or the assigned type is invalid.
+
+        If the account_subtype is not valid, return an invalid result.
 
         Parameters:
-            account_subtype (Enum): the specific type of this Account. The
-                account_subtype is required and must be one of the members of
-                BankAccountType If the supplied account_subtype is not valid,
-                the account type is set to the constant
-                BankAccountType.NO_TYPE and the result will be invalid.
+            account_subtype (int): the specific type of this Account.
+                The account_subtype is required and must be one of the
+                members of BankAccountType If the supplied
+                account_subtype is not valid, BankAccountType.NO_TYPE
+                and the result will be invalid.
 
         Returns:
             (dict): ['entry'] - (str) the updated account_subtype

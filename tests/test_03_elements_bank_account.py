@@ -7,24 +7,33 @@ src_path = os.path.join(os.path.realpath("."), "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
-from db_support import (
-    account_values,
-    close_database,
-    create_accounts_table,
-    database,
-    open_database,
-    sparse_values,
-)
+from db_support import close_database, create_accounts_table, database, open_database
 
-from constants.account_types import AccountType, BankAccountType
+from constants.account_types import AccountType, BankAccountType, InvestmentAccountType
 from elements.account import Account
 from elements.bank_account import BankAccount
 
 # set account values for tests
-account_values["account_type"] = AccountType.BANK
-account_values["account_subtype"] = BankAccountType.NO_TYPE
+account_values = {
+    "record_id": 10,
+    "account_type": AccountType.BANK,
+    "account_subtype": BankAccountType.NO_TYPE,
+    "name": "Cash",
+    "description": "a description",
+    "company": "SlimyBank",
+    "account_number": "124356987",
+    "check_writing_avail": False,
+    "account_separate": False,
+    "hide_in_transaction_list": False,
+    "hide_in_account_lists": False,
+    "remarks": "a bank account",
+}
 
-sparse_values["account_type"] = AccountType.BANK
+sparse_values = {
+    "record_id": 10,
+    "name": "Cash",
+    "account_type": AccountType.BANK,
+}
 
 
 def test_0301_constr(open_database):
@@ -49,32 +58,23 @@ def test_0303_get_dbref(open_database):
     close_database(dbref)
 
 
-def test_0304_set_get_type(open_database):
+def test_0304_get_type(open_database):
     dbref = open_database
     account = BankAccount(dbref)
-    account._set_property("account_type", account_values["account_type"])
-    assert account_values["account_type"] == account.get_account_type()
+    assert account.defaults["account_type"] == AccountType.BANK
+    assert account.get_account_type() == AccountType.BANK
+
     account._set_property("account_type", None)
-    assert account.defaults["account_type"] == account.get_account_type()
-    result = account.set_account_type(None)
-    assert not result["valid"]
-    assert result["entry"] == AccountType.NO_TYPE
-    assert len(result["msg"]) > 0
-    result = account.set_account_type(AccountType.NO_TYPE)
-    assert not result["valid"]
-    assert result["entry"] == AccountType.NO_TYPE
-    assert len(result["msg"]) > 0
-    result = account.set_account_type(AccountType.INVESTMENT)
-    assert not result["valid"]
-    assert result["entry"] == AccountType.NO_TYPE
-    assert len(result["msg"]) > 0
-    result = account.set_account_type(AccountType.BANK)
-    assert result["valid"]
-    assert result["entry"] == AccountType.BANK
-    assert len(result["msg"]) == 0
-    account_type = account._get_property("account_type")
-    assert account_type == account_values["account_type"]
-    assert account.get_account_type() == account_values["account_type"]
+    assert account.get_account_type() == AccountType.BANK
+
+    account._set_property("account_type", None)
+    assert account.get_account_type() == AccountType.BANK
+
+    account.set_properties({"account_type": AccountType.NO_TYPE})
+    assert account.get_account_type() == AccountType.BANK
+
+    account._set_property("account_type", AccountType.INVESTMENT)
+    assert account.get_account_type() == AccountType.BANK
     close_database(dbref)
 
 
@@ -83,26 +83,31 @@ def test_0305_set_get_account_subtype(open_database):
     account = BankAccount(dbref)
     account._set_property("account_subtype", account_values["account_subtype"])
     assert account_values["account_subtype"] == account.get_account_subtype()
+
     account._set_property("account_subtype", None)
     assert account.defaults["account_subtype"] == account.get_account_subtype()
     result = account.set_account_subtype(None)
     assert not result["valid"]
     assert result["entry"] == BankAccountType.NO_TYPE
     assert len(result["msg"]) > 0
+
     result = account.set_account_subtype(BankAccountType.NO_TYPE)
     assert not result["valid"]
     assert result["entry"] == BankAccountType.NO_TYPE
     assert len(result["msg"]) > 0
+
     result = account.set_account_subtype(BankAccountType.CHECKING)
     assert result["valid"]
     assert result["entry"] == BankAccountType.CHECKING
     assert len(result["msg"]) == 0
     assert account.get_account_subtype() == BankAccountType.CHECKING
+
     result = account.set_account_subtype(BankAccountType.SAVINGS)
     assert result["valid"]
     assert result["entry"] == BankAccountType.SAVINGS
     assert len(result["msg"]) == 0
     assert account.get_account_subtype() == BankAccountType.SAVINGS
+
     result = account.set_account_subtype(BankAccountType.CD)
     assert result["valid"]
     assert result["entry"] == BankAccountType.CD
