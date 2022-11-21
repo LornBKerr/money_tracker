@@ -8,16 +8,33 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from db_support import (  # , database,
-    account_values,
     close_database,
     create_accounts_table,
     open_database,
-    sparse_values,
     string_too_long,
 )
 from lbk_library import Element  # Dbal,
 
+from constants.account_types import AccountType  # , BankAccountType
 from elements.account import Account
+
+# set account values for tests
+account_values = {
+    "record_id": 10,
+    "account_type": AccountType.NO_TYPE,
+    "account_subtype": AccountType.NO_TYPE,
+    "name": "Cash",
+    "description": "a description",
+    "company": "SlimyBank",
+    "account_number": "124356987",
+    "check_writing_avail": False,
+    "account_separate": False,
+    "hide_in_transaction_list": False,
+    "hide_in_account_lists": False,
+    "remarks": "a bank account",
+}
+
+sparse_values = {"record_id": 10, "name": "Cash"}
 
 
 def test_0201_constr(open_database):
