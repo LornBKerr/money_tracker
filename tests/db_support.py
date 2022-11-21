@@ -52,27 +52,49 @@ def create_accounts_table(open_database):
     return dbref
 
 
-# set account values for tests
-account_values = {
-    "record_id": 10,
-    "account_type": AccountType.NO_TYPE,
-    "account_subtype": AccountType.NO_TYPE,
-    "name": "Cash",
-    "description": "a description",
-    "company": "SlimyBank",
-    "account_number": "124356987",
-    "check_writing_avail": False,
-    "account_separate": False,
-    "hide_in_transaction_list": False,
-    "hide_in_account_lists": False,
-    "remarks": "a bank account",
-}
-
-sparse_values = {"record_id": 10, "name": "Cash"}
-
 string_too_long = (
     "ShortTermCapitalGainsShortTermCapitalGains"
     + "ShortTermCapitalGainsShortTermCapitalGains"
     + "ShortTermCapitalGainsShortTermCapitalGains"
     + "ShortTermCapitalGainsShortTermCapitalGains"
 )
+
+
+def load_accounts_table(dbref):
+    columns = [
+        "record_id",
+        "account_type",
+        "account_subtype",
+        "name",
+        "description",
+        "company",
+        "account_number",
+        "account_separate",
+        "hide_in_transaction_list",
+        "hide_in_account_lists",
+        "check_writing_avail",
+        "tax_deferred",
+        "remarks",
+    ]
+    value_set = [
+        ["1", "18V672", "A", "1", "Rebuild", "1", "", ""],
+        ["2", "BTB1108", "B", "1", "Usable", "0", "", ""],
+        ["3", "X036", "D", "1", "Usable", "0", "", ""],
+        ["4", "BTB1108", "CA", "1", "Usable", "0", "", ""],
+        ["5", "22H1053", "BB", "1", "Usable", "0", "", ""],
+        ["6", "268-090", "BC", "1", "Usable", "1", "", ""],
+        ["8", "BTB1108", "BD", "1", "Usable", "1", "", ""],
+        ["9", "X055", "EB", "1", "Usable", "1", "", ""],
+        ["56", "BULB-1895", "JCIB", "2", "Replace", "1", "", "License Plate Lamp"],
+        ["59", "158-520", "JCIA", "2", "Replace", "1", "", ""],
+        ["70", "BTB1108", "CX", "1", "Usable", "1", "", ""],
+    ]
+    sql_query = {"type": "INSERT", "table": "accounts"}
+    for values in value_set:
+        entries = {}
+        i = 0
+        while i < len(columns):
+            entries[columns[i]] = values[i]
+            i += 1
+        sql = dbref.sql_query_from_array(sql_query, entries)
+        dbref.sql_query(sql, entries)
