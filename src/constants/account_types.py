@@ -56,9 +56,7 @@ class BankAccountType:
     been assigned.
     """
 
-    BANK_ACCOUNT_TYPE_NASK = (
-        ElementType.ELEMENT_TYPE_MASK | AccountType.BANK | 0x0000F
-    )
+    BANK_ACCOUNT_TYPE_NASK = ElementType.ELEMENT_TYPE_MASK | AccountType.BANK | 0x0000F
 
     NO_TYPE = AccountType.BANK | 0x0
     CHECKING = AccountType.BANK | 0x1

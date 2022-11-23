@@ -12,6 +12,7 @@ from lbk_library import Dbal, ElementSet
 from constants.account_types import AccountType, InvestmentAccountType
 from elements.investment_account import InvestmentAccount
 
+
 class InvestmentAccountSet(ElementSet):
     """
     Provides a set of Investment Accounts from the database table 'accounts'.
@@ -61,14 +62,19 @@ class InvestmentAccountSet(ElementSet):
             offset,
         )
         # end __init__()
-        
+
         # Build the subset from the total investment account set
         subset = []
-        if where_column != None and where_value in InvestmentAccountType.list() and where_value != InvestmentAccountType.NO_TYPE:
+        if (
+            where_column is not None
+            and where_value in InvestmentAccountType.list()
+            and where_value != InvestmentAccountType.NO_TYPE
+        ):
             for account in self.get_property_set():
                 if account._get_property(where_column) == where_value:
                     subset.append(account)
             self.set_property_set(subset)
         # end __init__()
+
 
 # end Class InvestmentAccountSet
