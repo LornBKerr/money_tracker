@@ -60,14 +60,19 @@ class BankAccountSet(ElementSet):
             limit,
             offset,
         )
-        
+
         # Build the subset from the total bank account set
         subset = []
-        if where_column != None and where_value in BankAccountType.list() and where_value != BankAccountType.NO_TYPE:
+        if (
+            where_column is not None
+            and where_value in BankAccountType.list()
+            and where_value != BankAccountType.NO_TYPE
+        ):
             for account in self.get_property_set():
                 if account._get_property(where_column) == where_value:
                     subset.append(account)
             self.set_property_set(subset)
         # end __init__()
+
 
 # end Class BankAccountSet
