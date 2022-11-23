@@ -38,7 +38,7 @@ sparse_values = {
 }
 
 
-def test_0501_constr(open_database):
+def test_0401_constr(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     assert type(account) is InvestmentAccount
@@ -46,21 +46,21 @@ def test_0501_constr(open_database):
     close_database(dbref)
 
 
-def test_0502_get_table(open_database):
+def test_0402_get_table(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     assert account.get_table() == "accounts"
     close_database(dbref)
 
 
-def test_0503_get_dbref(open_database):
+def test_0403_get_dbref(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     assert account.get_dbref() == dbref
     close_database(dbref)
 
 
-def test_0504_set_get_type(open_database):
+def test_0404_set_get_type(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     assert account.defaults["account_type"] == AccountType.INVESTMENT
@@ -80,7 +80,7 @@ def test_0504_set_get_type(open_database):
     close_database(dbref)
 
 
-def test_0505_set_get_account_subtype(open_database):
+def test_0405_set_get_account_subtype(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     account._set_property("account_subtype", account_values["account_subtype"])
@@ -118,7 +118,7 @@ def test_0505_set_get_account_subtype(open_database):
     close_database(dbref)
 
 
-def test_0506_get_set_tax_deferred(open_database):
+def test_0406_get_set_tax_deferred(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     defaults = account.get_initial_values()
@@ -143,7 +143,7 @@ def test_0506_get_set_tax_deferred(open_database):
     close_database(dbref)
 
 
-def test_0507_get_default_property_values(open_database):
+def test_0407_get_default_property_values(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref)
     assert isinstance(account.get_properties(), dict)
@@ -168,7 +168,7 @@ def test_0507_get_default_property_values(open_database):
     close_database(dbref)
 
 
-def test_0508_set_properties_from_dict(open_database):
+def test_0408_set_properties_from_dict(open_database):
     # set InvestmentAccount from array
     dbref = open_database
     account = InvestmentAccount(dbref)
@@ -194,7 +194,7 @@ def test_0508_set_properties_from_dict(open_database):
     close_database(dbref)
 
 
-def test_0509_initial_partial_account_values(open_database):
+def test_0409_initial_partial_account_values(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref, sparse_values)
     assert account.get_record_id() == sparse_values["record_id"]
@@ -218,7 +218,7 @@ def test_0509_initial_partial_account_values(open_database):
     close_database(dbref)
 
 
-def test_0510_bad_column_name(open_database):
+def test_0410_bad_column_name(open_database):
     dbref = open_database
     account = InvestmentAccount(dbref, None, "a_column")
     assert isinstance(account.get_properties(), dict)
@@ -243,7 +243,7 @@ def test_0510_bad_column_name(open_database):
     close_database(dbref)
 
 
-def test_0511_account_add(create_accounts_table):
+def test_0411_account_add(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref, account_values)
     record_id = account.add()
@@ -252,7 +252,7 @@ def test_0511_account_add(create_accounts_table):
     close_database(dbref)
 
 
-def test_0512_account_read_db(create_accounts_table):
+def test_0412_account_read_db(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref)
     account.set_properties(account_values)
@@ -303,7 +303,7 @@ def test_0512_account_read_db(create_accounts_table):
     close_database(dbref)
 
 
-def test_0513_account_update(create_accounts_table):
+def test_0413_account_update(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref)
     account.set_properties(account_values)
@@ -338,7 +338,7 @@ def test_0513_account_update(create_accounts_table):
     close_database(dbref)
 
 
-def test_0514_item_delete(create_accounts_table):
+def test_0414_item_delete(create_accounts_table):
     dbref = create_accounts_table
     account = InvestmentAccount(dbref, account_values)
     account.add()
