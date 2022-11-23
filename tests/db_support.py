@@ -9,7 +9,7 @@ if src_path not in sys.path:
 
 from lbk_library import Dbal
 
-from constants.account_types import AccountType, BankAccountType
+from constants.account_types import AccountType, BankAccountType, InvestmentAccountType
 
 database = "test.db"
 
@@ -59,7 +59,6 @@ string_too_long = (
     + "ShortTermCapitalGainsShortTermCapitalGains"
 )
 
-
 def load_accounts_table(dbref):
     columns = [
         "record_id",
@@ -77,17 +76,14 @@ def load_accounts_table(dbref):
         "remarks",
     ]
     value_set = [
-        ["1", "18V672", "A", "1", "Rebuild", "1", "", ""],
-        ["2", "BTB1108", "B", "1", "Usable", "0", "", ""],
-        ["3", "X036", "D", "1", "Usable", "0", "", ""],
-        ["4", "BTB1108", "CA", "1", "Usable", "0", "", ""],
-        ["5", "22H1053", "BB", "1", "Usable", "0", "", ""],
-        ["6", "268-090", "BC", "1", "Usable", "1", "", ""],
-        ["8", "BTB1108", "BD", "1", "Usable", "1", "", ""],
-        ["9", "X055", "EB", "1", "Usable", "1", "", ""],
-        ["56", "BULB-1895", "JCIB", "2", "Replace", "1", "", "License Plate Lamp"],
-        ["59", "158-520", "JCIA", "2", "Replace", "1", "", ""],
-        ["70", "BTB1108", "CX", "1", "Usable", "1", "", ""],
+        ["1", AccountType.INVESTMENT, InvestmentAccountType.SINGLE_FUND, "Fidelity Aggressive Growth", "sample fund 1", "Fidelity Investments", "124356987",  False, False, False, False, False, "an investment account",],
+        ["2", AccountType.INVESTMENT, InvestmentAccountType.BROKERAGE,   "MerrillLynch IRA",           "sample fund 2", "Fidelity Investments", "ml-23654",   False, False, False, False, True, "an IRA account",],
+        ["3", AccountType.BANK,       BankAccountType.SAVINGS,           "Chase Savings",              "sample bank 1", "Chase Bank",           "0987654321", False, False, False, True,  False, "an bank account",],
+        ["4", AccountType.INVESTMENT, InvestmentAccountType.BROKERAGE,   "MerrillLynch Geneeral",      "sample fund 3", "Fidelity Investments", "qvmenrttd",  False, False, False, True,  False, "an IRA account",],
+        ["5", AccountType.BANK,       BankAccountType.CHECKING,          "BA checking",                "sample bank 2", "Bank of America",      "qvmenrttd",  False, False, False, True,  False, "a Checking account",],
+        ["6", AccountType.INVESTMENT, InvestmentAccountType.SINGLE_FUND, "Fidelity Short Term Bond",   "sample fund 4", "Fidelity Investments", "0987654321", False, False, True,  False, False, "an investment account",],
+        ["7", AccountType.BANK,       BankAccountType.CD,                "CD 1",                       "sample bank 3", "NFCU",                 "124356987",  False, False, False, False, False, "an investment account",],
+        ["8", AccountType.BANK,       BankAccountType.CD,                "CD 2",                       "sample bank 4", "NFCU",                 "ml-23654",   False, False, False, False, False, "an IRA account",],
     ]
     sql_query = {"type": "INSERT", "table": "accounts"}
     for values in value_set:
