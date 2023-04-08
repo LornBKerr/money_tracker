@@ -1,30 +1,36 @@
 # ########################################################
 #
-# Requirements file for MoneyTracker program virtual environment
+# Requirements for the MoneyTracker virtual environment.
 #
 # File:       requirements.txt
 # Author:     Lorn B Kerr
-# Copyright:  (c) 2022 Lorn B Kerr
+# Copyright:  (c) 2022, 2023 Lorn B Kerr
 # License:    see file LICENSE
 #
 # ########################################################
-
-# local project library
--e ../../development/lbk_library
 
 # Test PyPi url
 --extra-index-url https://test.pypi.org/simple/
 
 
-# libraries required
+# local project library
 lbk_library
+
+# General Requirements
 PyQt6
 yfinance
 
 # Testing Requirements
+black
 coverage
+flake8
+flake8-pyproject
+isort
+PyInstaller
+pydocstyle
+pydocstyle[toml]
 pytest
 pytest_cover
-tox
-
+pytest-mock
+pytest-qt
 
