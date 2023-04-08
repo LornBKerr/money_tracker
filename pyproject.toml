@@ -1,0 +1,29 @@
+# ########################################################
+#
+# Tool configuration for parts_tracker program.
+#
+# File:       pyproject.toml
+# Author:     Lorn B Kerr
+# Copyright:  (c) 2022, 2023 Lorn B Kerr
+# License:    MIT, see file LICENSE
+#
+# ########################################################
+
+[tool.isort]
+profile = 'black'
+multi_line_output = 3
+src_paths = './src/*'
+
+[tool.flake8]
+max-line-length = 88
+filename = '*.py'
+exclude = ['*git', '__pycache__', 'docs', 'build', 'dist', '*venv', 'pending', 'tests']
+ignore = ['F841', 'W503', 'E501']
+per-file-ignores = '__init__.py:F401'
+max-complexity = 11
+
+[tool.pydocstyle]
+inherit = false
+match = '(?!test_).*\.py'
+match-dir='./src/*'
+
